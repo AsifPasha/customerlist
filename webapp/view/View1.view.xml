@@ -1,0 +1,47 @@
+<mvc:View controllerName="com.sap.customerlist.controller.View1"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">
+        <content>
+            <Panel headerText="Table Editable" expandable="true" expanded="false">
+
+                <Table id="CustomersTable">
+                    <headerToolbar>
+                        <OverflowToolbar>
+                            <ToolbarSpacer />
+                            <Button id="EditBtn" press="onEditSavePress" text="{= ${ViewModel>/mtablemode} === 'display' ? 'Edit' : 'Save'}" tooltip="{= ${ViewModel>/mtablemode} === 'display' ? 'Edit' : 'Save'}"/>
+                            <Button id="AddRowBtn" press="onAddRowPress" text="AddRow" tooltip="AddRow" visible="false"/>
+                        </OverflowToolbar>
+                    </headerToolbar>
+                    <columns>
+                        <Column>
+                            <Text text="Customer ID"/>
+                        </Column>
+                        <Column>
+                            <Text text="Company Name"/>
+                        </Column>
+                        <Column>
+                            <Text text="Contact Name"/>
+                        </Column>
+                        <Column>
+                            <Text text="Contact Title"/>
+                        </Column>
+                        <Column>
+                            <Text text="Address"/>
+                        </Column>
+                        <Column>
+                            <Text text="Phone"/>
+                        </Column>
+                    </columns>
+                </Table>
+            </Panel>
+            <Panel headerText="Table Editable Dynmaic" expandable="true" expanded="false">
+
+                <Table id="CustomersTableDynamic">
+                    
+ 
+                </Table>
+            </Panel>
+        </content>
+    </Page>
+</mvc:View>
