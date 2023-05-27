@@ -3,12 +3,13 @@
     xmlns="sap.m">
     <Page id="page" title="{i18n>title}">
         <content>
-            <Panel headerText="Table Editable" expandable="true" expanded="false">
+            <Panel headerText="Table Editable" expandable="true" expanded="true">
 
                 <Table id="CustomersTable">
                     <headerToolbar>
                         <OverflowToolbar>
                             <ToolbarSpacer />
+                            <SearchField id="searchID" search="onSearch" width="200px"/>
                             <Button id="EditBtn" press="onEditSavePress" text="{= ${ViewModel>/mtablemode} === 'display' ? 'Edit' : 'Save'}" tooltip="{= ${ViewModel>/mtablemode} === 'display' ? 'Edit' : 'Save'}"/>
                             <Button id="AddRowBtn" press="onAddRowPress" text="AddRow" tooltip="AddRow" visible="false"/>
                         </OverflowToolbar>

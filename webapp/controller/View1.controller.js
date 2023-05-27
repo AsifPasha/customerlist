@@ -9,6 +9,11 @@ sap.ui.define([
 
         return Controller.extend("com.sap.customerlist.controller.View1", {
             onInit: function () {
+                var oCompData = sap.ui.component(sap.ui.core.Component.getOwnerIdFor(this.getView())).getComponentData();
+                var sCustId = '';
+                if (oCompData && oCompData.startupParameters && Object.keys(oCompData.startupParameters).length > 0) {
+                    sCustId = oCompData.startupParameters.customer[0];
+                }
 
                 var oJsonModel = new sap.ui.model.json.JSONModel({
                     mtablemode: "display",
@@ -17,54 +22,61 @@ sap.ui.define([
 
                 this.getView().setModel(oJsonModel, "ViewModel");
                 var oModel = this.getOwnerComponent().getModel();
-                
+
                 oModel.read("/Customers", {
                     success: function (oData) {
                         // debugger;
-                        
-                        if(oData.results.length > 0 ) {
+
+                        if (oData.results.length > 0) {
                             var aColumnData = [];
                             var aKeys = Object.keys(oData.results[0]);
-                            for (let index = 0; index < aKeys.length; index++) {                            
-                                if(typeof(oData.results[0][aKeys[index]]) === 'string') {
+                            for (let index = 0; index < aKeys.length; index++) {
+                                if (typeof (oData.results[0][aKeys[index]]) === 'string') {
                                     aColumnData.push({
-                                        colProperty:aKeys[index]
+                                        colProperty: aKeys[index]
                                     });
                                 }
                             }
-                        
-                        // typeof(oData.results[0][Object.keys(oData.results[0])[1]])
-                        // var aColumnData = [
-                        //     {
-                        //         columnName: "Customer ID",
-                        //         colProperty: "CustomerID"
-                        //     },
-                        //     {
-                        //         columnName: "Company Name",
-                        //         colProperty: "CompanyName"
-                        //     },
-                        //     {
-                        //         columnName: "Contact Name",
-                        //         colProperty: "ContactName"
-                        //     },
-                        //     {
-                        //         columnName: "Contact Title",
-                        //         colProperty: "ContactTitle"
-                        //     },
-                        //     {
-                        //         columnName: "Address",
-                        //         colProperty: "Address"
-                        //     },
-                        //     {
-                        //         columnName: "Phone",
-                        //         colProperty: "Phone"
-                        //     }
-                        // ];
-                        debugger;
-                        this.getView().getModel("ViewModel").setProperty("/customerResults", oData.results);
-                        this.rebindTable("display");
-                        this.rebindDynamicTable(aColumnData);
-                    }
+
+                            // typeof(oData.results[0][Object.keys(oData.results[0])[1]])
+                            // var aColumnData = [
+                            //     {
+                            //         columnName: "Customer ID",
+                            //         colProperty: "CustomerID"
+                            //     },
+                            //     {
+                            //         columnName: "Company Name",
+                            //         colProperty: "CompanyName"
+                            //     },
+                            //     {
+                            //         columnName: "Contact Name",
+                            //         colProperty: "ContactName"
+                            //     },
+                            //     {
+                            //         columnName: "Contact Title",
+                            //         colProperty: "ContactTitle"
+                            //     },
+                            //     {
+                            //         columnName: "Address",
+                            //         colProperty: "Address"
+                            //     },
+                            //     {
+                            //         columnName: "Phone",
+                            //         colProperty: "Phone"
+                            //     }
+                            // ];
+
+                            this.getView().getModel("ViewModel").setProperty("/customerResults", oData.results);
+                            this.rebindTable("display");
+                            this.rebindDynamicTable(aColumnData);
+
+
+                            jQuery.sap.delayedCall(50, this, function () {
+                                var oSearchField = this.getView().byId("searchID");
+                                oSearchField.setValue(sCustId);
+                                oSearchField.fireSearch();
+                            });
+                        }
                     }.bind(this),
                     error: function (oError) {
 
@@ -135,7 +147,7 @@ sap.ui.define([
                             text: arr[index].colProperty
                         })
                     });
-                    oTable.addColumn(oColumn);                 
+                    oTable.addColumn(oColumn);
                     var oText = new sap.m.Text({
                         text: "{ViewModel>" + arr[index].colProperty + "}"
                     });
@@ -143,7 +155,7 @@ sap.ui.define([
 
                 }
                 var oColumnListItem = new sap.m.ColumnListItem({
-                    cells:aCells
+                    cells: aCells
                 });
 
                 oTable.bindAggregation("items", {
@@ -175,6 +187,15 @@ sap.ui.define([
                 var aData = this.getView().getModel("ViewModel").getProperty("/customerResults");
                 aData.unshift(oObject);
                 this.getView().getModel("ViewModel").setProperty("/customerResults", aData);
+            },
+            onSearch: function () {
+                var sValue = this.getView().byId("searchID").getValue();
+                var aFilter = [];
+                var oBinding = this.getView().byId("CustomersTable").getBinding("items");
+                if (sValue) {
+                    aFilter.push(new sap.ui.model.Filter("CustomerID", sap.ui.model.FilterOperator.Contains, sValue));
+                }
+                oBinding.filter(aFilter);
             }
         });
     });
