@@ -5,7 +5,7 @@
         <content>
             <Panel headerText="Table Editable" expandable="true" expanded="true">
 
-                <Table id="CustomersTable">
+                <Table id="CustomersTable" mode="{= ${ViewModel>/mtablemode} === 'display' ? 'None' : 'Delete'}" delete="onDeleteTableRecord">
                     <headerToolbar>
                         <OverflowToolbar>
                             <ToolbarSpacer />

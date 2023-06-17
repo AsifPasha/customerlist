@@ -113,7 +113,10 @@ sap.ui.define([
                     var oColumnListItem = new sap.m.ColumnListItem({
                         cells: [
                             new sap.m.Input({
-                                value: "{ViewModel>CustomerID}"
+                                value: "{ViewModel>CustomerID}",
+                                liveChange:function(oEvt) {
+                                    oEvt.getSource().setValue(oEvt.getSource().getValue().toUpperCase());
+                                }
                             }),
                             new sap.m.Input({
                                 value: "{ViewModel>CompanyName}"
@@ -169,9 +172,41 @@ sap.ui.define([
                     this.rebindTable("edit");
                     this.getView().byId("AddRowBtn").setVisible(true);
                 } else {
+
+                    // Do the validation before saving 
+                    // Get Table Items
+                   var aTableItems =  this.getView().byId("CustomersTable").getItems();
+
+                //    var bMatch = false;
+                   for (let index = 0; index < aTableItems.length; index++) {
+                        var aCells = aTableItems[index].getCells();
+
+                        for (let idx = 0; idx < aCells.length; idx++) {   
+                            var curValue = aCells[idx]  ;                     
+                            if(!curValue.getValue()) {
+                                curValue.focus();
+                                curValue.setValueState("Error");
+                                curValue.setValueStateText("Please Enter "+curValue.getBindingInfo("value").parts[0].path);
+                                jQuery.sap.delayedCall(2000, this, function () {
+                                    curValue.setValueState("None");
+                                    curValue.setValueStateText("");
+                                });
+                                // bMatch = true                              
+                                return; 
+                            } 
+                        }
+                  
+                   }
+                    // debugger;
+
+                    // if(!bMatch) {
+                        
+                    // }
                     this.getView().getModel("ViewModel").setProperty("/mtablemode", "display");
                     this.rebindTable("display");
                     this.getView().byId("AddRowBtn").setVisible(false);
+
+
 
                 }
             },
@@ -196,6 +231,14 @@ sap.ui.define([
                     aFilter.push(new sap.ui.model.Filter("CustomerID", sap.ui.model.FilterOperator.Contains, sValue));
                 }
                 oBinding.filter(aFilter);
+            },
+            onDeleteTableRecord: function(oEvt){
+                // Delete Selected Record from the table and Json as well
+                debugger; 
+                var iDelIndex = parseFloat(oEvt.getParameter("listItem").getBindingContextPath().split("/customerResults/")[1]);
+                var aData = this.getView().getModel("ViewModel").getProperty("/customerResults");
+                aData.splice(iDelIndex,1);
+                this.getView().getModel("ViewModel").setProperty("/customerResults", aData);
             }
         });
     });
